@@ -19,44 +19,33 @@ import { InputType } from '@/components/auth/type';
 import OpenPasswordResetModal from '@/app/(auth)/login/_components/LoginForm/OpenPasswordResetModal';
 import { z } from 'zod/v4';
 
-// schema
-const inputEmptySchema = z.object({
-  email: z.string().nonempty({ message: '이메일은 필수 입력입니다.' }),
-  password: z.string().nonempty({ message: '비밀번호는 필수 입력입니다.' }),
-  userName: z.string().nonempty({ message: '이름은 필수 입력입니다.' }),
-  passwordConfirm: z
-    .string()
-    .nonempty({ message: '비밀번호 확인은 필수 입력입니다.' }),
+// refine: 단일 필드 정의 -> userName, email, password (형식 검사)
+// check: 상호 필드 정의 -> password 와 passwordConfirm -> 회원가입 폼에서만 필요
+
+const authSchema = z.object({
+  email: z.string().refine(validateEmail, {
+    message: '올바른 이메일 형식이 아닙니다.',
+  }),
+  userName: z.string().refine(validateName, {
+    message: '이름은 10자 이하로 입력해주세요.',
+  }),
+  password: z.string().refine(validatePassword, {
+    message: '비밀번호는 영문, 숫자, 특수문자를 포함한 8자 이상이어야 합니다.',
+  }),
+  passwordConfirm: z.string().optional().check,
 });
 
-const inputValidSchema = z
-  .object({
-    email: z.string().refine(validateEmail, {
-      message: '올바른 이메일 형식이 아닙니다.',
-    }),
-    password: z.string().refine(validatePassword, {
-      message:
-        '비밀번호는 영문, 숫자, 특수문자를 포함한 8자 이상이어야 합니다.',
-    }),
-    userName: z.string().refine(validateName, {
-      message: '이름은 10자 이하로 입력해주세요.',
-    }),
-    passwordConfirm: z.string(), // 기본 정의
-  })
+// (({ password, passwordConfirm }, ctx) => {
+//     const isMatch = validatePasswordConfirm({ password, passwordConfirm });
 
-  // 외부 유효성 검사 함수를 직접 호출해서 사용
-  // ctx : Zod 내부 컨텍스트
-  .superRefine(({ password, passwordConfirm }, ctx) => {
-    const isMatch = validatePasswordConfirm({ password, passwordConfirm });
-
-    if (!isMatch) {
-      ctx.addIssue({
-        path: ['passwordConfirm'],
-        code: z.ZodIssueCode.custom, // 반드시 enum 값이어야 함
-        message: '비밀번호가 일치하지 않습니다.',
-      });
-    }
-  });
+//     if (!isMatch) {
+//       ctx.addIssue({
+//         path: ['passwordConfirm'],
+//         code: z.ZodIssueCode.custom, // 반드시 enum 값이어야 함
+//         message: '비밀번호가 일치하지 않습니다.',
+//       });
+//     }
+//   });
 
 export default function LoginForm() {
   const [formValues, setFormValues] = useState<{
@@ -111,7 +100,7 @@ export default function LoginForm() {
   const handleInputChange =
     (key: InputType) => (e: React.ChangeEvent<HTMLInputElement>) => {
       const newFormValues = { ...formValues, [key]: e.target.value };
-      const result = inputValidSchema.safeParse(newFormValues);
+      const result = authSchema.safeParse(newFormValues);
 
       if (!result.success) {
         const fieldErrors = result.error.flatten().fieldErrors;
