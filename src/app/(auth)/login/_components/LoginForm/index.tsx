@@ -13,11 +13,11 @@ import {
 import { useMemo, useState } from 'react';
 import { toast } from 'react-toastify';
 import Cookies from 'js-cookie';
-import { z } from 'zod';
 import { useRouter } from 'next/navigation';
 import { ROUTES } from '@/constants/routes';
 import { InputType } from '@/components/auth/type';
 import OpenPasswordResetModal from '@/app/(auth)/login/_components/LoginForm/OpenPasswordResetModal';
+import { z } from 'zod/v4';
 
 // schema
 const inputEmptySchema = z.object({
