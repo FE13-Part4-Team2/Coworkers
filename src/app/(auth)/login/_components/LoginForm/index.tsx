@@ -21,19 +21,26 @@ import { z } from 'zod/v4';
 // refine: 단일 필드 정의 -> userName, email, password (형식 검사)
 // check: 상호 필드 정의 -> password 와 passwordConfirm -> 회원가입 폼에서만 필요
 // todo : 지금은 형식 검사 오류메시지만 띄우고 있음. 빈값일 때 필수 입력입니다 메시지도 띄워야 함
-
+// todo : 스키마를 외부로 빼기
 const authSchema = z
   .object({
-    email: z.string().refine(validateEmail, {
-      message: '올바른 이메일 형식이 아닙니다.',
-    }),
-    userName: z.string().refine(validateName, {
-      message: '이름은 10자 이하로 입력해주세요.',
-    }),
-    password: z.string().refine(validatePassword, {
-      message:
-        '비밀번호는 영문, 숫자, 특수문자를 포함한 8자 이상이어야 합니다.',
-    }),
+    email: z
+      .string()
+      .min(1, '이메일을 입력해주세요') // 빈값 에러
+      .refine(validateEmail, {
+        message: '올바른 이메일 형식이 아닙니다.',
+      }),
+    userName: z
+      .string()
+      .min(1, '닉네임을 입력해주세요')
+      .max(10, '닉네임은 10자 이하로 입력해주세요.'), // 닉네임 길이 제한
+    password: z
+      .string()
+      .min(1, '비밀번호를 입력해주세요')
+      .refine(validatePassword, {
+        message:
+          '비밀번호는 영문, 숫자, 특수문자를 포함한 8자 이상이어야 합니다.',
+      }),
     passwordConfirm: z.string().optional(),
   })
   .check((ctx) => {
