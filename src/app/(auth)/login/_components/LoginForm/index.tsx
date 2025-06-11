@@ -8,7 +8,6 @@ import {
   validateEmail,
   validateName,
   validatePassword,
-  validatePasswordConfirm,
 } from '@/utils/inputValidation';
 import { useMemo, useState } from 'react';
 import { toast } from 'react-toastify';
@@ -21,6 +20,7 @@ import { z } from 'zod/v4';
 
 // refine: 단일 필드 정의 -> userName, email, password (형식 검사)
 // check: 상호 필드 정의 -> password 와 passwordConfirm -> 회원가입 폼에서만 필요
+// todo : 지금은 형식 검사 오류메시지만 띄우고 있음. 빈값일 때 필수 입력입니다 메시지도 띄워야 함
 
 const authSchema = z
   .object({
@@ -74,28 +74,6 @@ export default function LoginForm() {
       (formErrors.password?.length ?? 0) === 0
     );
   }, [formValues, formErrors]);
-
-  const handleInputBlur =
-    (key: InputType) => (e: React.ChangeEvent<HTMLInputElement>) => {
-      const newFormValues = { ...formValues, [key]: e.target.value };
-      setFormValues(newFormValues);
-
-      const result = inputEmptySchema.safeParse(newFormValues);
-
-      if (!result.success) {
-        const fieldErrors = result.error.flatten().fieldErrors;
-
-        setFormErrors((prev) => ({
-          ...prev,
-          [key]: fieldErrors[key],
-        }));
-      } else {
-        setFormErrors((prev) => ({
-          ...prev,
-          [key]: '',
-        }));
-      }
-    };
 
   const handleInputChange =
     (key: InputType) => (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -191,13 +169,11 @@ export default function LoginForm() {
         <InputWithLabel
           inputType="email"
           errorMessage={formErrors.email}
-          onInputBlur={handleInputBlur}
           onInputChange={handleInputChange}
         />
         <InputWithLabel
           inputType="password"
           errorMessage={formErrors.password}
-          onInputBlur={handleInputBlur}
           onInputChange={handleInputChange}
         />
       </div>
