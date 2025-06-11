@@ -22,30 +22,30 @@ import { z } from 'zod/v4';
 // refine: 단일 필드 정의 -> userName, email, password (형식 검사)
 // check: 상호 필드 정의 -> password 와 passwordConfirm -> 회원가입 폼에서만 필요
 
-const authSchema = z.object({
-  email: z.string().refine(validateEmail, {
-    message: '올바른 이메일 형식이 아닙니다.',
-  }),
-  userName: z.string().refine(validateName, {
-    message: '이름은 10자 이하로 입력해주세요.',
-  }),
-  password: z.string().refine(validatePassword, {
-    message: '비밀번호는 영문, 숫자, 특수문자를 포함한 8자 이상이어야 합니다.',
-  }),
-  passwordConfirm: z.string().optional().check,
-});
-
-// (({ password, passwordConfirm }, ctx) => {
-//     const isMatch = validatePasswordConfirm({ password, passwordConfirm });
-
-//     if (!isMatch) {
-//       ctx.addIssue({
-//         path: ['passwordConfirm'],
-//         code: z.ZodIssueCode.custom, // 반드시 enum 값이어야 함
-//         message: '비밀번호가 일치하지 않습니다.',
-//       });
-//     }
-//   });
+const authSchema = z
+  .object({
+    email: z.string().refine(validateEmail, {
+      message: '올바른 이메일 형식이 아닙니다.',
+    }),
+    userName: z.string().refine(validateName, {
+      message: '이름은 10자 이하로 입력해주세요.',
+    }),
+    password: z.string().refine(validatePassword, {
+      message:
+        '비밀번호는 영문, 숫자, 특수문자를 포함한 8자 이상이어야 합니다.',
+    }),
+    passwordConfirm: z.string().optional(),
+  })
+  .check((ctx) => {
+    // 비밀번호와 비밀번호 확인이 일치하지 않으면 에러
+    if (ctx.value.password !== ctx.value.passwordConfirm) {
+      ctx.issues.push({
+        code: 'custom', // 에러 코드
+        message: '비밀번호가 일치하지 않습니다.', // 에러 메시지
+        input: ctx, // 검증 중인 데이터 객체
+      });
+    }
+  });
 
 export default function LoginForm() {
   const [formValues, setFormValues] = useState<{
