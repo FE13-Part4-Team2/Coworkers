@@ -1,9 +1,6 @@
 import { z } from 'zod/v4';
 import { validateEmail, validatePassword } from '@/utils/inputValidation';
 
-// todo 2. 주석 정리
-// todo 3. 빨간 줄 해결
-
 export const authSchema = z
   .object({
     email: z
