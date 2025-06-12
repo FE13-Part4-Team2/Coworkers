@@ -22,7 +22,7 @@ export const authSchema = z
         message:
           '비밀번호는 영문, 숫자, 특수문자를 포함한 8자 이상이어야 합니다.',
       }),
-    passwordConfirm: z.string().optional(),
+    passwordConfirm: z.string(),
   })
   .check((ctx) => {
     // 비밀번호와 비밀번호 확인이 일치하지 않으면 에러
