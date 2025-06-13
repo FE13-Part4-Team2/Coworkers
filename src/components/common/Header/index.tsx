@@ -42,7 +42,7 @@ export default function Header() {
       if (!fetchedUser) throw new Error('유저 정보를 가져오지 못했습니다');
       return fetchedUser;
     },
-    enabled: isLogin && Boolean(selectedGroup),
+    enabled: isLogin,
   });
 
   const handleLogout = () => {

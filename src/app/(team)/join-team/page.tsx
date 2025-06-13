@@ -5,14 +5,20 @@ import { useRouter } from 'next/navigation';
 import { ROUTES } from '@/constants/routes';
 import JoinTeamForm from '@/app/(team)/_components/JoinTeamForm';
 import { postGroupInvitation } from '@/lib/apis/group';
-import { useMemberships } from '@/hooks/useMemberships';
 import { INVITATION_ERROR_MAP } from '@/utils/errorMap';
+import { useQuery } from '@tanstack/react-query';
+import { getUser } from '@/lib/apis/user';
 
 const jwtRegex = /^[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+$/;
 
 export default function JoinTeamPage() {
   const router = useRouter();
-  const { memberships } = useMemberships(true);
+
+  const { data: currentUser } = useQuery({
+    queryKey: ['currentUser'],
+    queryFn: () => getUser({}),
+    enabled: true,
+  });
 
   const [link, setLink] = useState('');
   const [error, setError] = useState<string>();
@@ -27,7 +33,8 @@ export default function JoinTeamPage() {
       setError('유효한 링크가 아닙니다.');
       return;
     }
-    const email = memberships[0]?.userEmail;
+    const email = currentUser?.email;
+
     if (!email) {
       setError('사용자 정보를 불러올 수 없습니다.');
       return;
