@@ -88,34 +88,32 @@ export default function TaskListMenu({
   };
 
   return (
-    isAdmin && (
-      <DropDown>
-        <DropDown.Trigger className="mb-0">
-          <TaskListMenuButton size={size} />
-        </DropDown.Trigger>
-        <DropDown.Menu align="right" className={`${dropdownMenuStyle}`}>
-          {size === 'md' && (
-            <DropDown.Item
-              onClick={openCreateTaskListModal}
-              className={`${dropdownItemStyle}`}
-            >
-              생성하기
-            </DropDown.Item>
-          )}
+    <DropDown>
+      <DropDown.Trigger className="mb-0">
+        <TaskListMenuButton size={size} />
+      </DropDown.Trigger>
+      <DropDown.Menu align="right" className={`${dropdownMenuStyle}`}>
+        {size === 'md' && (
           <DropDown.Item
-            onClick={openEditTaskListModal}
+            onClick={openCreateTaskListModal}
             className={`${dropdownItemStyle}`}
           >
-            수정하기
+            생성하기
           </DropDown.Item>
-          <DropDown.Item
-            onClick={openDeleteTaskListModal}
-            className={`${dropdownItemStyle}`}
-          >
-            삭제하기
-          </DropDown.Item>
-        </DropDown.Menu>
-      </DropDown>
-    )
+        )}
+        <DropDown.Item
+          onClick={openEditTaskListModal}
+          className={`${dropdownItemStyle}`}
+        >
+          수정하기
+        </DropDown.Item>
+        <DropDown.Item
+          onClick={openDeleteTaskListModal}
+          className={`${dropdownItemStyle}`}
+        >
+          삭제하기
+        </DropDown.Item>
+      </DropDown.Menu>
+    </DropDown>
   );
 }
