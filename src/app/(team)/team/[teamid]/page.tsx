@@ -42,6 +42,7 @@ export default async function TeamPage({
         <AddButton variant="tasklist" groupId={groupId} />
       </div>
       <TaskListBarList
+        key={taskListsData.length}
         items={taskListsData}
         groupId={groupId}
         userId={Number(userId)}
